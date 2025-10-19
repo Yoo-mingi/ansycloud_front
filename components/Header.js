@@ -5,7 +5,7 @@ import { useAuth } from '@/app/providers/AuthProvider';
 import { useState } from 'react';
 
 export default function Header() {
-  const { accessToken, logout } = useAuth();
+  const { isAuthenticated, isLoading, logout } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
 
   async function handleLogout() {
@@ -29,7 +29,7 @@ export default function Header() {
         </div>
 
         {/* Center Navigation - Only show when logged in */}
-        {accessToken && (
+        {isAuthenticated && (
           <nav className="hidden lg:flex items-center gap-1 absolute left-1/2 transform -translate-x-1/2">
             <Link
               href="/"
@@ -60,7 +60,13 @@ export default function Header() {
 
         {/* Auth Section - Right side */}
         <div className="flex items-center gap-4 ml-auto flex-shrink-0 mr-4">
-          {accessToken ? (
+          {isLoading ? (
+            // 로딩 중 - 스켈레톤 표시
+            <div className="flex items-center gap-3">
+              <div className="w-20 h-10 bg-[#1a1f2e] rounded animate-pulse"></div>
+              <div className="w-20 h-10 bg-[#1a1f2e] rounded animate-pulse"></div>
+            </div>
+          ) : isAuthenticated ? (
             <div className="relative">
               <button
                 onClick={() => setShowDropdown(!showDropdown)}

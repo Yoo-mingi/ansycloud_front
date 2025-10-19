@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import ProtectedRoute from '@/app/components/ProtectedRoute';
-import CommunityContent from '@/app/components/community/CommunityContent';
+import ProtectedRoute from '@/components/ProtectedRoute';
+import CommunityContent from '@/components/community/CommunityContent';
 
 export default function CommunityPage() {
   return (

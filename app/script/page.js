@@ -1,5 +1,5 @@
-import ProtectedRoute from '@/app/components/ProtectedRoute';
-import ScriptContent from '@/app/components/script/ScriptContent';
+import ProtectedRoute from '@/components/ProtectedRoute';
+import ScriptContent from '@/components/script/ScriptContent';
 
 export default function ScriptPage() {
   return (

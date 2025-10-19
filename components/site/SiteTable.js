@@ -40,36 +40,51 @@ export default function SiteTable({ sites, loading }) {
             <thead>
               <tr className="border-b border-[#2d3748] bg-[#252d3d]">
                 <th className="px-6 py-4 text-left text-sm font-semibold text-[#e4e6eb]">Site Name</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-[#e4e6eb]">Master Node</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-[#e4e6eb]">Slave Nodes</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-[#e4e6eb]">Status</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-[#e4e6eb]">Master Server</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-[#e4e6eb]">Slave Servers (IPs)</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-[#e4e6eb]">Actions</th>
               </tr>
             </thead>
             <tbody>
               {sites.map((site) => (
-                <tr key={site.id} className="border-b border-[#2d3748] hover:bg-[#252d3d]/50 transition">
-                  <td className="px-6 py-4 text-[#e4e6eb] font-medium">{site.name || '-'}</td>
-                  <td className="px-6 py-4 text-[#9ca3af]">{site.masterNode || '-'}</td>
-                  <td className="px-6 py-4 text-[#9ca3af]">{site.slaveNode || '-'}</td>
+                <tr key={site.siteName} className="border-b border-[#2d3748] hover:bg-[#252d3d]/50 transition">
                   <td className="px-6 py-4">
-                    <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold ${
-                      site.status === 'active' || site.status === 'online'
-                        ? 'bg-[#064e3b] text-[#86efac]'
-                        : 'bg-[#7f1d1d] text-[#fca5a5]'
-                    }`}>
-                      <div className={`w-2 h-2 rounded-full ${
-                        site.status === 'active' || site.status === 'online' ? 'bg-[#10b981]' : 'bg-[#ef4444]'
-                      }`}></div>
-                      {site.status || 'Unknown'}
-                    </span>
+                    <div className="font-medium text-[#e4e6eb]">{site.siteName || '-'}</div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="text-[#9ca3af]">
+                      {site.masterName ? (
+                        <div>
+                          <div className="font-medium text-[#e4e6eb]">{site.masterName}</div>
+                          <div className="text-xs text-[#6b7280] mt-0.5">{site.masterIP}</div>
+                        </div>
+                      ) : (
+                        <span className="text-[#6b7280]">No master</span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    {site.slaveIPs && site.slaveIPs.length > 0 ? (
+                      <div className="flex gap-2 overflow-x-auto max-w-md scrollbar-thin scrollbar-thumb-[#2d3748] scrollbar-track-[#1a1f2e]">
+                        {site.slaveIPs.map((ip, idx) => (
+                          <span
+                            key={idx}
+                            className="inline-flex items-center px-2.5 py-1 rounded-md bg-[#252d3d] text-[#9ca3af] text-xs font-mono whitespace-nowrap border border-[#2d3748]"
+                          >
+                            {ip}
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <span className="text-[#6b7280] text-sm">No slaves</span>
+                    )}
                   </td>
                   <td className="px-6 py-4">
                     <Link
-                      href={`/site/${site.id}`}
+                      href={`/site/manage`}
                       className="text-[#3b82f6] hover:text-[#06b6d4] font-semibold text-sm transition"
                     >
-                      Edit
+                      Manage
                     </Link>
                   </td>
                 </tr>

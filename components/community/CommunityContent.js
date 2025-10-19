@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { API_BASE_URL } from '@/app/config';
+import { fetchWithAuth } from '@/app/utils/fetchWithAuth';
 import PostList from './PostList';
 
 export default function CommunityContent() {
@@ -13,7 +14,7 @@ export default function CommunityContent() {
   useEffect(() => {
     setLoading(true);
     setError(null);
-    fetch(`${API_BASE_URL}/community`)
+    fetchWithAuth(`${API_BASE_URL}/api/community/community`)
       .then((res) => {
         if (!res.ok) throw new Error('Failed to fetch posts');
         return res.json();

@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import ProtectedRoute from '@/app/components/ProtectedRoute';
-import SiteContent from '@/app/components/site/SiteContent';
+import ProtectedRoute from '@/components/ProtectedRoute';
+import SiteContent from '@/components/site/SiteContent';
 
 export default function SitePage() {
   return (

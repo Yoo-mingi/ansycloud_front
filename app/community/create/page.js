@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import ProtectedRoute from '@/app/components/ProtectedRoute';
+import ProtectedRoute from '@/components/ProtectedRoute';
 import Link from 'next/link';
 
 const API_URL = 'http://localhost:8080/comunity';

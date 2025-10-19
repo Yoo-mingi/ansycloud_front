@@ -20,7 +20,8 @@ export default function LoginPage() {
 
     try {
       await login({ username, password });
-      router.push('/');
+      // 강제 새로고침으로 AuthProvider가 재초기화되도록 함
+      window.location.href = '/';
     } catch (err) {
       setError(err.message || '로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.');
     } finally {

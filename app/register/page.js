@@ -7,22 +7,17 @@ import Link from 'next/link';
 const API_BASE = 'http://localhost:8080/api';
 
 export default function RegisterPage() {
-  const [step, setStep] = useState('input'); // 'input' | 'verify' | 'success'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordCheck, setPasswordCheck] = useState('');
-  const [verificationCode, setVerificationCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [sentEmail, setSentEmail] = useState('');
   const router = useRouter();
 
-  // 1단계: 인증 코드 발송
-  const handleSendVerification = async (e) => {
+  // 회원가입 (이메일 인증 없이 바로 가입)
+  const handleRegister = async (e) => {
     e.preventDefault();
     setError('');
-    setSuccess('');
 
     if (!email) {
       setError('이메일을 입력해주세요.');
@@ -42,42 +37,12 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      const res = await fetch(`${API_BASE}/auth/send-verification`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
-      });
-
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.message || '인증 코드 발송에 실패했습니다.');
-      }
-
-      setSentEmail(email);
-      setStep('verify');
-      setSuccess('인증 코드가 이메일로 발송되었습니다.');
-    } catch (err) {
-      setError(err.message || '인증 코드 발송에 실패했습니다.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // 2단계: 회원가입 (인증 코드 검증)
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    setError('');
-    setSuccess('');
-    setLoading(true);
-
-    try {
       const res = await fetch(`${API_BASE}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           username: email,
-          password,
-          verificationCode
+          password
         })
       });
 
@@ -86,11 +51,8 @@ export default function RegisterPage() {
         throw new Error(data.message || '회원가입에 실패했습니다.');
       }
 
-      setStep('success');
-      setSuccess('회원가입이 완료되었습니다!');
-      setTimeout(() => {
-        router.push('/login');
-      }, 2000);
+      alert('회원가입이 완료되었습니다!');
+      router.push('/login');
     } catch (err) {
       setError(err.message || '회원가입에 실패했습니다.');
     } finally {
@@ -127,148 +89,75 @@ export default function RegisterPage() {
             </div>
           )}
 
-          {/* Success Message */}
-          {success && step !== 'success' && (
-            <div className="mb-6 p-4 bg-[#064e3b] border border-[#10b981] text-[#86efac] rounded-lg text-sm">
-              {success}
+          {/* Registration Form */}
+          <form onSubmit={handleRegister} className="space-y-5">
+            <div>
+              <label className="block text-sm font-semibold text-[#e4e6eb] mb-2">
+                Email
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                className="w-full px-4 py-3 bg-[#0f1419] border border-[#2d3748] rounded-lg text-[#e4e6eb] placeholder-[#6b7280] focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6]"
+                required
+                disabled={loading}
+              />
             </div>
-          )}
 
-          {/* Step 1: Information Input */}
-          {step === 'input' && (
-            <form onSubmit={handleSendVerification} className="space-y-5">
-              <div>
-                <label className="block text-sm font-semibold text-[#e4e6eb] mb-2">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
-                  className="w-full px-4 py-3 bg-[#0f1419] border border-[#2d3748] rounded-lg text-[#e4e6eb] placeholder-[#6b7280] focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6]"
-                  required
-                  disabled={loading}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-[#e4e6eb] mb-2">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full px-4 py-3 bg-[#0f1419] border border-[#2d3748] rounded-lg text-[#e4e6eb] placeholder-[#6b7280] focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6]"
-                  required
-                  disabled={loading}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-[#e4e6eb] mb-2">
-                  Confirm Password
-                </label>
-                <input
-                  type="password"
-                  value={passwordCheck}
-                  onChange={(e) => setPasswordCheck(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full px-4 py-3 bg-[#0f1419] border border-[#2d3748] rounded-lg text-[#e4e6eb] placeholder-[#6b7280] focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6]"
-                  required
-                  disabled={loading}
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading || !email || !password || !passwordCheck}
-                className="w-full bg-gradient-to-r from-[#3b82f6] to-[#06b6d4] hover:from-[#1e40af] hover:to-[#0891b2] disabled:from-[#6b7280] disabled:to-[#4b5563] text-white font-semibold py-3 px-4 rounded-lg transition transform hover:scale-105 disabled:hover:scale-100"
-              >
-                {loading ? 'Sending...' : 'Send Verification Code'}
-              </button>
-            </form>
-          )}
-
-          {/* Step 2: Verification Code Input */}
-          {step === 'verify' && (
-            <form onSubmit={handleRegister} className="space-y-5">
-              <div className="bg-[#252d3d] border border-[#3b82f6]/30 p-4 rounded-lg">
-                <p className="text-sm text-[#e4e6eb]">
-                  Verification code sent to <span className="font-semibold text-[#3b82f6]">{sentEmail}</span>
-                </p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-[#e4e6eb] mb-2">
-                  Verification Code
-                </label>
-                <input
-                  type="text"
-                  value={verificationCode}
-                  onChange={(e) => setVerificationCode(e.target.value)}
-                  placeholder="000000"
-                  className="w-full px-4 py-3 bg-[#0f1419] border border-[#2d3748] rounded-lg text-[#e4e6eb] placeholder-[#6b7280] focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6] tracking-widest text-center"
-                  required
-                  disabled={loading}
-                  maxLength="6"
-                />
-              </div>
-
-              <div className="flex gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setStep('input')}
-                  disabled={loading}
-                  className="flex-1 bg-[#252d3d] hover:bg-[#2d3748] disabled:bg-[#1a1f2e] text-[#e4e6eb] font-semibold py-3 px-4 rounded-lg transition border border-[#2d3748]"
-                >
-                  Back
-                </button>
-                <button
-                  type="submit"
-                  disabled={loading || !verificationCode}
-                  className="flex-1 bg-gradient-to-r from-[#3b82f6] to-[#06b6d4] hover:from-[#1e40af] hover:to-[#0891b2] disabled:from-[#6b7280] disabled:to-[#4b5563] text-white font-semibold py-3 px-4 rounded-lg transition transform hover:scale-105 disabled:hover:scale-100"
-                >
-                  {loading ? 'Verifying...' : 'Create Account'}
-                </button>
-              </div>
-            </form>
-          )}
-
-          {/* Step 3: Success */}
-          {step === 'success' && (
-            <div className="text-center py-8">
-              <div className="mb-6">
-                <div className="w-16 h-16 bg-gradient-to-br from-[#10b981] to-[#059669] rounded-full flex items-center justify-center mx-auto">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-              </div>
-              <p className="text-[#e4e6eb] font-semibold mb-2">Account Created Successfully!</p>
-              <p className="text-[#9ca3af] text-sm">Redirecting to login page...</p>
+            <div>
+              <label className="block text-sm font-semibold text-[#e4e6eb] mb-2">
+                Password
+              </label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full px-4 py-3 bg-[#0f1419] border border-[#2d3748] rounded-lg text-[#e4e6eb] placeholder-[#6b7280] focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6]"
+                required
+                disabled={loading}
+              />
             </div>
-          )}
+
+            <div>
+              <label className="block text-sm font-semibold text-[#e4e6eb] mb-2">
+                Confirm Password
+              </label>
+              <input
+                type="password"
+                value={passwordCheck}
+                onChange={(e) => setPasswordCheck(e.target.value)}
+                placeholder="••••••••"
+                className="w-full px-4 py-3 bg-[#0f1419] border border-[#2d3748] rounded-lg text-[#e4e6eb] placeholder-[#6b7280] focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6]"
+                required
+                disabled={loading}
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading || !email || !password || !passwordCheck}
+              className="w-full bg-gradient-to-r from-[#3b82f6] to-[#06b6d4] hover:from-[#1e40af] hover:to-[#0891b2] disabled:from-[#6b7280] disabled:to-[#4b5563] text-white font-semibold py-3 px-4 rounded-lg transition transform hover:scale-105 disabled:hover:scale-100"
+            >
+              {loading ? 'Creating Account...' : 'Create Account'}
+            </button>
+          </form>
 
           {/* Sign In Link */}
-          {step !== 'success' && (
-            <>
-              <div className="my-6 flex items-center gap-4">
-                <div className="flex-1 h-px bg-[#2d3748]"></div>
-                <span className="text-[#6b7280] text-sm">Already have an account?</span>
-                <div className="flex-1 h-px bg-[#2d3748]"></div>
-              </div>
+          <div className="my-6 flex items-center gap-4">
+            <div className="flex-1 h-px bg-[#2d3748]"></div>
+            <span className="text-[#6b7280] text-sm">Already have an account?</span>
+            <div className="flex-1 h-px bg-[#2d3748]"></div>
+          </div>
 
-              <Link
-                href="/login"
-                className="block w-full text-center px-4 py-3 border border-[#2d3748] rounded-lg text-[#3b82f6] hover:bg-[#252d3d] font-semibold transition"
-              >
-                Sign In
-              </Link>
-            </>
-          )}
+          <Link
+            href="/login"
+            className="block w-full text-center px-4 py-3 border border-[#2d3748] rounded-lg text-[#3b82f6] hover:bg-[#252d3d] font-semibold transition"
+          >
+            Sign In
+          </Link>
         </div>
 
         {/* Footer Text */}
